@@ -11,6 +11,7 @@ Containerized host environment with virtual and physical switches
     1-2. Export path to project root
 
         echo "export HYBRID_NET_ROOT=$(pwd)" >> ~/.bashrc
+        source ~/.bashrc
 
 2. For host-net machine
 
