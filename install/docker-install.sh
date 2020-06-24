@@ -2,6 +2,7 @@
 
 . /etc/os-release
 
+# TODO: Script for centos
 # add the GPG key
 sudo apt-get install -y curl
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -17,6 +18,7 @@ sudo apt-get update
 sudo apt-cache policy docker-ce
 
 # install Docker
+# TODO: ubuntu 18.04
 if [ "$VERSION_ID" == "16.04" ]; then
     sudo apt-get install -y docker-ce=17.03.2~ce-0~ubuntu-xenial
 elif [ "$VERSION_ID" == "14.04" ]; then

@@ -2,21 +2,35 @@
 Containerized host environment with virtual and physical switches
 
 # Instruction
-1. Run install/ovs-install.sh to install Open vSwitch
+1. For both host-net and controller machine
+    1-1. Run install/docker-install.sh to install Docker
 
-    ./install/ovs-install.sh
+        ./install/docker-install.sh
 
-2. Run install/docker-install.sh to install Docker
+    1-2. Export path to project root
+        export PJ_HOME=$(pwd) 
 
-    ./install/docker-install.sh
+2. For host-net machine
+    2-1. Run host-net/install/ovs-install.sh to install Open vSwitch
 
-3. Modify /etc/network/interface to configure interfaces for the control and data planes
+        ./install/ovs-install.sh
 
-4. Change directory to image and run dockerImg.sh to create a docker image for hosts
+    2-2. Modify /etc/network/interface to configure interfaces for the control and data planes
 
-    cd image
-    ./dockerImg.sh
-    cd ..
+        # TODO
+
+    2-3. Change directory to image and run dockerImg.sh to create a docker image for hosts
+
+        cd image
+        ./host-img.sh
+        cd ..
+    
+    2-4. Run setup
+
+        ./host-net/host-setup.sh
+
+3. For controller machine
+    3-1. 
 
 # Requirments
 Host network is optimized for Ubuntu 18.04
