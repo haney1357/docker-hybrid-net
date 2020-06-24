@@ -17,9 +17,9 @@
 #    Host-$CONT_NUM ------                |                    |
 #                                         |____________________|                  $NIC4
 
-if [ $# -ne 1 ]; then
+if [ $# -ne 2 ]; then
 # TODO: Dynamic configuration of vnet
-	echo "Usage: $0 [Machine No]"
+	echo "Usage: $0 [Machine No] [Controller IP]"
 	exit -1
 fi
 
@@ -48,9 +48,12 @@ function connect_ovs {
     fi
 }
 
+CONTROLLER_IP=$2
+
 # Valid Machine Number Range : 1 ~ 8
 # TODO: Restrict number of machine
 MACHINE_NO=$1
+
 # Valid Container Number Range : 1 ~ 30
 # TODO: Restrict number of container
 CONT_NUM=4
@@ -86,9 +89,9 @@ sudo mkdir -p /var/run/netns
 # Controller IP and Port
 # TODO: Distributed Controller Priority
 if [ $MACHINE_NO -eq 1 ]; then
-    CONTROLLERS="tcp:143.248.56.240:6653,tcp:143.248.56.240:6654,tcp:143.248.56.240:6655"
+    CONTROLLERS="tcp:$CONTROLLER_IP:6653,tcp:$CONTROLLER_IP:6654,tcp:$CONTROLLER_IP:6655"
 else
-    CONTROLLERS="tcp:143.248.56.240:6655,tcp:143.248.56.240:6654,tcp:143.248.56.240:6653"
+    CONTROLLERS="tcp:$CONTROLLER_IP:6655,tcp:$CONTROLLER_IP:6654,tcp:$CONTROLLER_IP:6653"
 fi
 
 PROTOCOL=OpenFlow10
@@ -145,7 +148,7 @@ echo $(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')\
     ": Created and connected " $(docker ps -a | grep "$HOST_NAME" | wc -l)" containers"
 
 # Connect ovs base on your topology
-
+# TODO: Composetopology from configuration
 # Edge-1 <br1>
 #              \
 #                Core-1 <br5>
