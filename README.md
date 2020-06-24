@@ -8,6 +8,7 @@ Containerized host environment with virtual and physical switches
         ./install/docker-install.sh
 
     1-2. Export path to project root
+
         export PJ_HOME=$(pwd) 
 
 2. For host-net machine
