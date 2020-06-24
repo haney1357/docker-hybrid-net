@@ -171,12 +171,7 @@ connect_ovs br4 br6 patch4-6 patch6-4 2> /dev/null
 echo $(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')\
     ": connect ovs"
 
-if [ -n ${NIC1+x} ]; then 
-    sudo ip link set $NIC1 up
-    sudo ovs-vsctl add-port br5 $NIC1
-fi
-
-if [ -n ${NIC2+x} ]; then 
-    sudo ip link set $NIC2 up
-    sudo ovs-vsctl add-port br6 $NIC2
-fi
+sudo ip link set $NIC1 up
+sudo ovs-vsctl add-port br5 $NIC1
+sudo ip link set $NIC2 up
+sudo ovs-vsctl add-port br6 $NIC2
