@@ -3,6 +3,7 @@ Containerized host environment with virtual and physical switches
 
 # Instruction
 1. For both host-net and controller machine
+
     1-1. Run install/docker-install.sh to install Docker
 
         ./install/docker-install.sh
@@ -12,6 +13,7 @@ Containerized host environment with virtual and physical switches
         export PJ_HOME=$(pwd) 
 
 2. For host-net machine
+
     2-1. Run host-net/install/ovs-install.sh to install Open vSwitch
 
         ./install/ovs-install.sh
@@ -31,6 +33,7 @@ Containerized host environment with virtual and physical switches
         ./script/host-setup.sh
 
 3. For controller machine
+
     3-1. Run setup
 
         ./script/ctrl-setup.sh
