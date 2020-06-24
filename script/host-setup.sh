@@ -119,11 +119,13 @@ CIDR=24
 
 # Host
 HOST_NAME=host:0.1
-GATEWAY=172.16.10.1
 for i in $(seq 1 $CONT_NUM)
 do
     did=$(docker run -itd --net=none --name host-$i $HOST_NAME /bin/bash)
-    dip=172.16.10.$(( (MACHINE_NO - 1) * 30 + 10 + i ))
+#    dip=172.16.10.$(( (MACHINE_NO - 1) * 30 + 10 + i ))
+#    GATEWAY=172.16.10.1
+    dip=172.16.$(( MACHINE_NO - 1 )).$(( 10 + i ))
+    GATEWAY=172.16.$(( MACHINE_NO - 1 )).1
     mac=$(python $HYBRID_NET_ROOT/util/create_mac.py $dip)
     pid=$(docker inspect -f '{{.State.Pid}}' $did)
     bridge=$(( (i-1)*EDGE/CONT_NUM+1 ))
