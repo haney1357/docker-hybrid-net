@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -z ${HYBRID_NET_ROOT+x} ]; then 
+    echo '$HYBRID_NET_ROOT is Unset'
+    exit -1
+fi
+
 # Host network clean
 
 # Remove Links between OVSs
@@ -30,4 +35,4 @@ ATOMIX_CONTAINER=$(docker ps -a | grep atomix | awk '{print $1}')
 docker rm -f $CTRL_CONTAINER 2> /dev/null
 docker rm -f $ATOMIX_CONTAINER 2> /dev/null
 
-rm -rf $PJ_HOME/gen
+rm -rf $HYBRID_NET_ROOT/gen

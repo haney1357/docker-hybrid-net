@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -z ${HYBRID_NET_ROOT+x} ]; then 
+    echo '$HYBRID_NET_ROOT is Unset'
+    exit -1
+fi
+
 if [ $(sudo firewall-cmd --permanent --list-all --zone=public | grep "8181-8183" | wc -l) -eq 0 ]; then
     sudo firewall-cmd --permanent --zone=public --add-port 9876/tcp
     sudo firewall-cmd --permanent --zone=public --add-port 6653-6655/tcp
@@ -23,17 +28,17 @@ ATOMIX_NUM=3
 CTRL_NUM=3
 CTRL_NAME=onosproject/onos
 
-$PJ_HOME/util/clean.sh 2>/dev/null
+$HYBRID_NET_ROOT/util/clean.sh 2>/dev/null
 
-mkdir -p $PJ_HOME/gen
-mkdir -p $PJ_HOME/gen/conf
-mkdir -p $PJ_HOME/gen/cluster
+mkdir -p $HYBRID_NET_ROOT/gen
+mkdir -p $HYBRID_NET_ROOT/gen/conf
+mkdir -p $HYBRID_NET_ROOT/gen/cluster
 
 ATOMIX_IP=
 for i in $(seq 1 $ATOMIX_NUM)
 do
-    cat $PJ_HOME/conf/atomix.conf | sed -e "s/IDX/$i/g" | sed -e "s/atomix_node/172.17.0.$((i+1))/g" >> $PJ_HOME/gen/conf/atomix$i.conf
-    docker run -itd --name atomix-$i -v $PJ_HOME/gen/conf:/etc/atomix/conf  $ATOMIX --config /etc/atomix/conf/atomix$i.conf --ignore-resources
+    cat $HYBRID_NET_ROOT/conf/atomix.conf | sed -e "s/IDX/$i/g" | sed -e "s/atomix_node/172.17.0.$((i+1))/g" >> $HYBRID_NET_ROOT/gen/conf/atomix$i.conf
+    docker run -itd --name atomix-$i -v $HYBRID_NET_ROOT/gen/conf:/etc/atomix/conf  $ATOMIX --config /etc/atomix/conf/atomix$i.conf --ignore-resources
     ATOMIX_IP+="$(docker inspect -f '{{.NetworkSettings.IPAddress}}' atomix-$i) "
 done
 
@@ -41,9 +46,9 @@ for i in $(seq 1 $CTRL_NUM)
 do
     docker run -itd --name onos-$i -p $(( 6653 + i - 1 )):6653 -p $(( 8101 + i - 1 )):8101 -p $(( 8181 + i - 1 )):8181 $CTRL_NAME
     CTRL_IP=$(docker inspect -f '{{.NetworkSettings.IPAddress}}' onos-$i)
-    $PJ_HOME/util/onos-gen-config $CTRL_IP $PJ_HOME/gen/cluster/cluster-$i.json -n $ATOMIX_IP
+    $HYBRID_NET_ROOT/util/onos-gen-config $CTRL_IP $HYBRID_NET_ROOT/gen/cluster/cluster-$i.json -n $ATOMIX_IP
     docker exec onos-$i mkdir /root/onos/config
-    docker cp $PJ_HOME/gen/cluster/cluster-$i.json onos-$i:/root/onos/config/cluster.json
+    docker cp $HYBRID_NET_ROOT/gen/cluster/cluster-$i.json onos-$i:/root/onos/config/cluster.json
 done
 
 echo "$CTRL_NUM controller created"

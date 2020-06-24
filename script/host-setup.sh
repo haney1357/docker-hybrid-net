@@ -75,12 +75,12 @@ NIC2=
 NIC3=
 NIC4=
 
-if [ -z ${PJ_HOME+x} ]; then 
-    echo '$PJ_HOME is Unset'
+if [ -z ${HYBRID_NET_ROOT+x} ]; then 
+    echo '$HYBRID_NET_ROOT is Unset'
     exit -1
 fi
 
-$PJ_HOME/host-net/host-clean.sh 2> /dev/null
+$HYBRID_NET_ROOT/host-net/host-clean.sh 2> /dev/null
 
 sudo mkdir -p /var/run/netns
 
@@ -124,7 +124,7 @@ for i in $(seq 1 $CONT_NUM)
 do
     did=$(docker run -itd --net=none --name host-$i $HOST_NAME /bin/bash)
     dip=172.16.10.$(( (MACHINE_NO - 1) * 30 + 10 + i ))
-    mac=$(python $DOCKER_HOME/util/create_mac.py $dip)
+    mac=$(python $HYBRID_NET_ROOT/util/create_mac.py $dip)
     pid=$(docker inspect -f '{{.State.Pid}}' $did)
     bridge=$(( (i-1)*EDGE/CONT_NUM+1 ))
     

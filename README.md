@@ -10,7 +10,7 @@ Containerized host environment with virtual and physical switches
 
     1-2. Export path to project root
 
-        export PJ_HOME=$(pwd) 
+        echo "export HYBRID_NET_ROOT=$(pwd)" >> ~/.bashrc
 
 2. For host-net machine
 
@@ -30,7 +30,7 @@ Containerized host environment with virtual and physical switches
     
     2-4. Run setup
 
-        ./script/host-setup.sh
+        ./script/host-setup.sh [Machine No] [Controller IP]
 
 3. For controller machine
 
