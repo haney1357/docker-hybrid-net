@@ -153,13 +153,13 @@ echo $(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')\
 # TODO: Composetopology from configuration
 # Edge-1 <br1>
 #              \
-#                Core-1 <br5>
-#              /              \
-# Edge-2 <br2>                  \
-#                               $NIC1 
-# Edge-3 <br3>                  /
-#              \              /
-#                Core-2 <br6>
+#                Core-1 <br5> -- $NIC1
+#              /
+# Edge-2 <br2>
+#
+# Edge-3 <br3>
+#              \
+#                Core-2 <br6> -- $NIC2
 #              /
 # Edge-4 <br4>
 
@@ -170,3 +170,13 @@ connect_ovs br4 br6 patch4-6 patch6-4 2> /dev/null
 
 echo $(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')\
     ": connect ovs"
+
+if [ -n ${NIC1+x} ]; then 
+    sudo ip link set $NIC1 up
+    sudo ovs-vsctl add-port br5 $NIC1
+fi
+
+if [ -n ${NIC2+x} ]; then 
+    sudo ip link set $NIC2 up
+    sudo ovs-vsctl add-port br6 $NIC2
+fi
