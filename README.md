@@ -20,7 +20,7 @@ Containerized host environment with virtual and physical switches
 
         # TODO
 
-    2-3. Change directory to image and run dockerImg.sh to create a docker image for hosts
+    2-3. Change directory to image and run host-img.sh to create a docker image for hosts
 
         cd image
         ./host-img.sh
