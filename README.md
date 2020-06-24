@@ -28,10 +28,12 @@ Containerized host environment with virtual and physical switches
     
     2-4. Run setup
 
-        ./host-net/host-setup.sh
+        ./script/host-setup.sh
 
 3. For controller machine
-    3-1. 
+    3-1. Run setup
+
+        ./script/ctrl-setup.sh
 
 # Requirments
 Host network is optimized for Ubuntu 18.04

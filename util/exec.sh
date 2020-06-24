@@ -1,12 +1,17 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 [host_no]"
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 [image name <onos|atomix>] [container number]"
     exit -1
 fi
 
-if [ $1 -eq 0 ]; then
-    docker exec -it ctrl /bin/bash
+if [ x$1 == x"atomix" ]; then
+    docker exec -it atomix-$2 /bin/bash
+elif [ x$1 == x"onos" ]; then
+    docker exec -it onos-$2 /bin/bash
+elif [ x$1 == x"host" ]; then
+    docker exec -it host-$2 /bin/bash
 else
-    docker exec -it host-$1 /bin/bash
+    echo "Usage: $0 [image name <onos|atomix|host>] [container number]"
+    exit -1
 fi
