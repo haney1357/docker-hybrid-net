@@ -1,0 +1,27 @@
+#!/bin/bash
+
+ps=$(docker ps -a | grep 'host-[[:digit:]]*' | awk '{print $1}')
+pids=
+ips=
+for id in $ps; do
+    pid=$(docker inspect -f '{{.State.Pid}}' $id)
+    pids+="$pid "
+    ip=$(sudo ip netns exec $pid ifconfig eth0 | grep -Po 't addr:\K[\d.]+')
+    ips+="$ip "
+done
+
+ips+="10.0.0.1 "
+
+for pid in $pids; do
+    sip=$(sudo ip netns exec $pid ifconfig eth0 | grep -Po 't addr:\K[\d.]+')
+    for ip in $ips; do
+        res=$(sudo ip netns exec $pid ping -c 1 $ip)
+        echo $res
+        exit
+        if [[ "$res" =~ "icmp_seq" ]]; then
+            echo -e "Ping test \033[1;37;40m$sip --> $ip\033[0m: \033[1;37;44mSuccess\033[0m"
+        else
+            echo -e "Ping test \033[1;37;40m$sip --> $ip\033[0m: \033[1;37;41mFailed\033[0m"
+        fi
+    done
+done
