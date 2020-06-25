@@ -31,8 +31,8 @@ function connect_ovs {
     if [ $# -ne 4 ]; then
         echo "function connect_ovs [br1] [br2] [patch1-2] [patch2-1]"
     else
-        sudo ip link delete dev $3 2> /dev/null
-        sudo ip link delete dev $4 2> /dev/null
+#        sudo ip link delete dev $3 2> /dev/null
+#        sudo ip link delete dev $4 2> /dev/null
 
         sudo ip tuntap add dev $3 mode tap
         sudo ip tuntap add dev $4 mode tap
@@ -101,7 +101,7 @@ PROTOCOL=OpenFlow10
 for i in $(seq 1 $OVS_NUM)
 do
     BR_ID=$(( 1000 + 100 * MACHINE_NO + i ))
-	sudo ovs-vsctl del-br br$i 2> /dev/null
+#	sudo ovs-vsctl del-br br$i 2> /dev/null
 	sudo ovs-vsctl add-br br$i
 	sudo ovs-vsctl set-controller br$i $(echo $CONTROLLERS | sed 's/,/ /g')
 	sudo ovs-vsctl set-fail-mode br$i secure
