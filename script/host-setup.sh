@@ -71,7 +71,7 @@ CONT_PER_EDGE=$((CONT_NUM/EDGE))
 
 # Interface Configuration
 NIC1=enp2s0
-NIC2=
+NIC2=enp13s0
 NIC3=
 NIC4=
 
