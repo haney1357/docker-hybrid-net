@@ -18,12 +18,12 @@ ips=
 for id in $ps; do
     pid=$(docker inspect -f '{{.State.Pid}}' $id)
     pids+="$pid "
-    ip=$(sudo ip netns exec $pid ifconfig eth0 | grep -Po 't addr:\K[\d.]+')
+    ip=$(sudo ip netns exec $pid ifconfig eth0 | grep -Po 'inet [addr:]*\K[\d.]+')
     ips+="$ip "
 done
 
 for pid in $pids; do
-    sip=$(sudo ip netns exec $pid ifconfig eth0 | grep -Po 't addr:\K[\d.]+')
+    sip=$(sudo ip netns exec $pid ifconfig eth0 | grep -Po 'inet [addr:]*\K[\d.]+')
     for ip in $ips; do
         ip_validate $ip $sip $pid
     done

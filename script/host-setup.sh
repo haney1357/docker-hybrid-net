@@ -56,7 +56,7 @@ MACHINE_NO=$1
 
 # Valid Container Number Range : 1 ~ 30
 # TODO: Restrict number of container
-CONT_NUM=4
+CONT_NUM=8
 
 # Switch Configuration
 # 1                ~ $EDGE          : Edge_Switch 
@@ -89,9 +89,11 @@ sudo mkdir -p /var/run/netns
 # Controller IP and Port
 # TODO: Distributed Controller Priority
 if [ $MACHINE_NO -eq 1 ]; then
-    CONTROLLERS="tcp:$CONTROLLER_IP:6653,tcp:$CONTROLLER_IP:6654,tcp:$CONTROLLER_IP:6655"
+#    CONTROLLERS="tcp:$CONTROLLER_IP:6653,tcp:$CONTROLLER_IP:6654,tcp:$CONTROLLER_IP:6655"
+    CONTROLLERS="tcp:$CONTROLLER_IP:6653"
 else
-    CONTROLLERS="tcp:$CONTROLLER_IP:6655,tcp:$CONTROLLER_IP:6654,tcp:$CONTROLLER_IP:6653"
+#    CONTROLLERS="tcp:$CONTROLLER_IP:6655,tcp:$CONTROLLER_IP:6654,tcp:$CONTROLLER_IP:6653"
+    CONTROLLERS="tcp:$CONTROLLER_IP:6655"
 fi
 
 PROTOCOL=OpenFlow10
