@@ -112,7 +112,7 @@ done
 echo $(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')": Created Open vSwitch"
 
 # NETWORK(X.X.X).DOCKER($START_IP ~ )
-CIDR=24
+CIDR=16
 
 # Docker Configuration
 # Create new container and link to the bridges
