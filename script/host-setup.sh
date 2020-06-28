@@ -17,9 +17,9 @@
 #    Host-$CONT_NUM ------                |                    |
 #                                         |____________________|                  $NIC4
 
-if [ $# -ne 2 ]; then
+if [ $# -ne 1 ]; then
 # TODO: Dynamic configuration of vnet
-	echo "Usage: $0 [Machine No] [Controller IP]"
+	echo "Usage: $0 [Machine No]"
 	exit -1
 fi
 
@@ -48,7 +48,7 @@ function connect_ovs {
     fi
 }
 
-CONTROLLER_IP=$2
+CONTROLLER_IP=192.168.0.2
 
 # Valid Machine Number Range : 1 ~ 8
 # TODO: Restrict number of machine

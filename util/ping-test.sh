@@ -24,9 +24,9 @@ done
 
 for pid in $pids; do
     sip=$(sudo ip netns exec $pid ifconfig eth0 | grep -Po 'inet [addr:]*\K[\d.]+')
-    for ip in $ips; do
-        ip_validate $ip $sip $pid
-    done
+#    for ip in $ips; do
+#        ip_validate $ip $sip $pid
+#    done
 
     for i in $(seq 1 $#); do
         ip_validate ${!i} $sip $pid
