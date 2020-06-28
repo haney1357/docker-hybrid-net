@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#TODO: Usage
+
 function ip_validate {
     ip=$1
     sip=$2

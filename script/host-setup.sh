@@ -17,9 +17,9 @@
 #    Host-$CONT_NUM ------                |                    |
 #                                         |____________________|                  $NIC4
 
-if [ $# -ne 1 ]; then
+if [ $# -ne 2 ]; then
 # TODO: Dynamic configuration of vnet
-	echo "Usage: $0 [Machine No]"
+	echo "Usage: $0 [Machine No] [Container Number]"
 	exit -1
 fi
 
@@ -50,13 +50,23 @@ function connect_ovs {
 
 CONTROLLER_IP=192.168.0.2
 
-# Valid Machine Number Range : 1 ~ 8
-# TODO: Restrict number of machine
+# Valid Machine Number Range : 1 ~ 256
+MAX_MACHINE_NO=255
 MACHINE_NO=$1
 
-# Valid Container Number Range : 1 ~ 30
-# TODO: Restrict number of container
-CONT_NUM=8
+if [ $MACHINE_NO -gt $MAX_MACHINE_NO ]; then
+    echo "$0: Machine Number cannot exceed $MAX_MACHINE_NO"
+    exit -1
+fi
+
+# Valid Container Number Range : 1 ~ 250
+MAX_CONT_NUM=250
+CONT_NUM=$2
+
+if [ $CONT_NUM -gt $MAX_CONT_NUM ]; then
+    echo "$0: Container Number cannot exceed $MAX_CONT_NUM"
+    exit -1
+fi
 
 # Switch Configuration
 # 1                ~ $EDGE          : Edge_Switch 
@@ -87,14 +97,12 @@ sudo mkdir -p /var/run/netns
 # Create new Open vSwitch bridges
 
 # Controller IP and Port
-# TODO: Distributed Controller Priority
-if [ $MACHINE_NO -eq 1 ]; then
-#    CONTROLLERS="tcp:$CONTROLLER_IP:6653,tcp:$CONTROLLER_IP:6654,tcp:$CONTROLLER_IP:6655"
-    CONTROLLERS="tcp:$CONTROLLER_IP:6653"
-else
-#    CONTROLLERS="tcp:$CONTROLLER_IP:6655,tcp:$CONTROLLER_IP:6654,tcp:$CONTROLLER_IP:6653"
-    CONTROLLERS="tcp:$CONTROLLER_IP:6655"
-fi
+CONTROLLERS="tcp:$CONTROLLER_IP:6653,tcp:$CONTROLLER_IP:6654,tcp:$CONTROLLER_IP:6655"
+#if [ $MACHINE_NO -eq 1 ]; then
+#    CONTROLLERS="tcp:$CONTROLLER_IP:6653"
+#else
+#    CONTROLLERS="tcp:$CONTROLLER_IP:6655"
+#fi
 
 PROTOCOL=OpenFlow10
 
@@ -102,35 +110,32 @@ PROTOCOL=OpenFlow10
 #   For all OVS Switches
 for i in $(seq 1 $OVS_NUM)
 do
-    BR_ID=$(( 1000 + 100 * MACHINE_NO + i ))
-#	sudo ovs-vsctl del-br br$i 2> /dev/null
+    BR_ID=$(( 10000 + 100 * MACHINE_NO + i ))
 	sudo ovs-vsctl add-br br$i
 	sudo ovs-vsctl set-controller br$i $(echo $CONTROLLERS | sed 's/,/ /g')
 	sudo ovs-vsctl set-fail-mode br$i secure
 	sudo ovs-vsctl -- set bridge br$i protocols=$PROTOCOL
-    sudo ovs-vsctl -- set bridge br$i other-config:datapath-id=000000000000$BR_ID
+    sudo ovs-vsctl -- set bridge br$i other-config:datapath-id=00000000000$BR_ID
 done
 
-echo $(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')": Created Open vSwitch"
-
-# NETWORK(X.X.X).DOCKER($START_IP ~ )
-CIDR=16
+echo $(curl ifconfig.me)": Created Open vSwitch"
 
 # Docker Configuration
 # Create new container and link to the bridges
+
+# NETWORK(X.X.X).DOCKER($START_IP ~ )
+CIDR=16
 
 # Host
 HOST_NAME=host:0.1
 for i in $(seq 1 $CONT_NUM)
 do
     did=$(docker run -itd --net=none --name host-$i $HOST_NAME /bin/bash)
-#    dip=172.16.10.$(( (MACHINE_NO - 1) * 30 + 10 + i ))
-#    GATEWAY=172.16.10.1
-    dip=172.16.$(( MACHINE_NO - 1 )).$(( 10 + i ))
+    dip=172.16.$(( MACHINE_NO - 1 )).$(( 5 + i ))
     GATEWAY=172.16.$(( MACHINE_NO - 1 )).1
     mac=$(python $HYBRID_NET_ROOT/util/create_mac.py $dip)
     pid=$(docker inspect -f '{{.State.Pid}}' $did)
-    bridge=$(( (i-1)*EDGE/CONT_NUM+1 ))
+    bridge=$(( (i-1)/CONT_PER_EDGE+1 ))
     
 # Create network ns for app
     sudo ln -s /proc/$pid/ns/net /var/run/netns/$pid
@@ -148,11 +153,10 @@ do
     sudo ip netns exec $pid ip route add default via $GATEWAY
 done
 
-echo $(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')\
+echo $(curl ifconfig.me)\
     ": Created and connected " $(docker ps -a | grep "$HOST_NAME" | wc -l)" containers"
 
 # Connect ovs base on your topology
-# TODO: Composetopology from configuration
 # Edge-1 <br1>
 #              \
 #                Core-1 <br5> -- $NIC1
@@ -170,8 +174,7 @@ connect_ovs br2 br5 patch2-5 patch5-2 2> /dev/null
 connect_ovs br3 br6 patch3-6 patch6-3 2> /dev/null
 connect_ovs br4 br6 patch4-6 patch6-4 2> /dev/null
 
-echo $(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')\
-    ": connect ovs"
+echo $(curl ifconfig.me)": connect ovs"
 
 sudo ip link set $NIC1 up
 sudo ovs-vsctl add-port br5 $NIC1
